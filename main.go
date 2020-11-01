@@ -1,23 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 )
 
-func hello(wr http.ResponseWriter, r *http.Request) {
-	_, err := wr.Write([]byte("This is a awesome note app!"))
-	if err != nil {
-		return
-	}
-}
-
 func main() {
-	http.HandleFunc("/", hello)
-	err := http.ListenAndServe(":8010", nil)
+	mux := initRouter()
+	err := http.ListenAndServe(":8010", mux)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("hehe!")
 }
