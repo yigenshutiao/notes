@@ -1,14 +1,20 @@
 package main
 
 import (
-	"net/http"
 	"notes/logic"
+
+	"github.com/julienschmidt/httprouter"
 )
 
-func initRouter() *http.ServeMux {
-	mux := http.NewServeMux()
+func initRouter() *httprouter.Router {
 
-	mux.Handle("/", http.HandlerFunc(logic.Hello))
+	router := httprouter.New()
+	router.GET("/", logic.Hello)
 
-	return mux
+	router.GET("/note", logic.GetAll)
+	router.POST("/note/:id", logic.GetOne)
+	router.POST("/note", logic.Add)
+	router.DELETE("/note/:id", logic.Delete)
+
+	return router
 }
