@@ -1,6 +1,7 @@
 package main
 
 import (
+	"notes/common"
 	"notes/logic"
 
 	"github.com/julienschmidt/httprouter"
@@ -9,12 +10,12 @@ import (
 func initRouter() *httprouter.Router {
 
 	router := httprouter.New()
-	router.GET("/", logic.Hello)
+	router.GET("/", common.HTTPHandler(logic.Hello))
 
-	router.GET("/note", logic.GetAll)
-	router.POST("/note/:id", logic.GetOne)
-	router.POST("/note", logic.Add)
-	router.DELETE("/note/:id", logic.Delete)
+	router.GET("/note", common.HTTPHandler(logic.GetAll))
+	router.POST("/note/:id", common.HTTPHandler(logic.GetOne))
+	router.POST("/note", common.HTTPHandler(logic.Add))
+	router.DELETE("/note/:id", common.HTTPHandler(logic.Delete))
 
 	return router
 }
