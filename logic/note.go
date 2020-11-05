@@ -1,8 +1,8 @@
 package logic
 
 import (
+	"context"
 	"crypto/md5"
-	"encoding/json"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -13,7 +13,13 @@ import (
 )
 
 func Hello(wr http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	_, err := wr.Write([]byte("This is a awesome note app!"))
+	_, err := wr.Write([]byte(`
+  __  _  _ ____ ____  __  _  _ ____    __ _  __ ____ ____ ____     __  ____ ____ 
+ / _\/ )( (  __) ___)/  \( \/ |  __)  (  ( \/  (_  _|  __) ___)   / _\(  _ (  _ \
+/    \ /\ /) _)\___ (  O ) \/ \) _)   /    (  O ))(  ) _)\___ \  /    \) __/) __/
+\_/\_(_/\_|____|____/\__/\_)(_(____)  \_)__)\__/(__)(____|____/  \_/\_(__) (__)
+
+`))
 	if err != nil {
 		return
 	}
@@ -21,54 +27,35 @@ func Hello(wr http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 var notes = map[string]model.Note{}
 
-func GetAll(wr http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func GetAll(ctx context.Context, _ *model.EmptyRequest) (map[string]model.Note, error) {
 
-	data := map[string]interface{}{
-		"msg":  "success",
-		"data": notes,
-	}
-
-	res, err := json.Marshal(data)
-	if err != nil {
-		return
-	}
-
-	_, err = wr.Write(res)
-	if err != nil {
-		return
-	}
-
+	return notes, nil
 }
 
-func GetOne(wr http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	id := p.ByName("id")
+func GetOne(ctx context.Context, note *model.Note) (model.Note, error) {
+
+	var err error
+
+	id := note.ID
 	if _, exist := notes[id]; !exist {
-		return
+		return model.Note{}, err
 	}
 
-	data := map[string]interface{}{
-		"msg":  "success",
-		"data": notes[id],
-	}
-
-	res, err := json.Marshal(data)
-	if err != nil {
-		return
-	}
-
-	_, err = wr.Write(res)
-	if err != nil {
-		return
-	}
+	return notes[id], nil
 }
 
-func Add(wr http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	content := r.URL.Query().Get("content")
+func Add(ctx context.Context, newNote *model.Note) (model.EmptyResponse, error) {
+
+	var err error
+
+	content := newNote.Content
+	// todo 这里用 validator 干掉
 	if content == "" {
-		return
+		return model.EmptyResponse{}, err
 	}
 
 	id := genID(content)
+
 	note := model.Note{
 		ID:         id,
 		Content:    content,
@@ -77,43 +64,21 @@ func Add(wr http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 	notes[id] = note
 
-	data := map[string]interface{}{
-		"msg":  "success",
-		"data": "",
-	}
+	return model.EmptyResponse{}, nil
 
-	res, err := json.Marshal(data)
-	if err != nil {
-		return
-	}
-
-	_, err = wr.Write(res)
-	if err != nil {
-		return
-	}
 }
 
-func Delete(wr http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	id := r.URL.Query().Get("id")
-	if _, exist := notes[id]; exist {
+func Delete(ctx context.Context, note *model.Note) (model.EmptyResponse, error) {
+
+	var err error
+
+	id := note.ID
+	if _, exist := notes[id]; !exist {
+		return model.EmptyResponse{}, err
+	} else {
 		delete(notes, id)
+		return model.EmptyResponse{}, nil
 	}
-
-	data := map[string]interface{}{
-		"msg":  "success",
-		"data": "",
-	}
-
-	res, err := json.Marshal(data)
-	if err != nil {
-		return
-	}
-
-	_, err = wr.Write(res)
-	if err != nil {
-		return
-	}
-
 }
 
 // 生成一个随机id

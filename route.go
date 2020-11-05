@@ -8,10 +8,9 @@ import (
 )
 
 func initRouter() *httprouter.Router {
-
 	router := httprouter.New()
-	router.GET("/", common.HTTPHandler(logic.Hello))
 
+	router.GET("/", logic.Hello)
 	router.GET("/note", common.HTTPHandler(logic.GetAll))
 	router.POST("/note/:id", common.HTTPHandler(logic.GetOne))
 	router.POST("/note", common.HTTPHandler(logic.Add))
