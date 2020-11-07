@@ -5,11 +5,14 @@ import (
 	"net/http"
 )
 
+const port = "8000"
+
 func main() {
+
 	initLOGO()
 
 	mux := initRouter()
-	err := http.ListenAndServe(":8010", mux)
+	err := http.ListenAndServe(":"+port, mux)
 	if err != nil {
 		log.Fatal(err)
 	}
