@@ -49,10 +49,6 @@ func Add(ctx context.Context, newNote *model.Note) (model.EmptyResponse, error) 
 	var err error
 
 	content := newNote.Content
-	// todo 这里用 validator 干掉
-	if content == "" {
-		return model.EmptyResponse{}, err
-	}
 
 	id := genID(content)
 
@@ -64,7 +60,7 @@ func Add(ctx context.Context, newNote *model.Note) (model.EmptyResponse, error) 
 	}
 	notes[id] = note
 
-	return model.EmptyResponse{}, nil
+	return model.EmptyResponse{}, err
 
 }
 
