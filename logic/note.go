@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"net/http"
 	"notes/model"
+	"notes/storage"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -27,21 +28,18 @@ func Hello(wr http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 var notes = map[string]model.Note{}
 
-func GetAll(ctx context.Context, _ *model.EmptyRequest) (map[string]model.Note, error) {
+func GetAll(ctx context.Context, _ *model.EmptyRequest) ([]model.NewNote, error) {
 
-	return notes, nil
-}
-
-func GetOne(ctx context.Context, note *model.Note) (model.Note, error) {
-
-	var err error
-
-	id := note.ID
-	if _, exist := notes[id]; !exist {
-		return model.Note{}, err
+	res, err := storage.GetAllNotes(ctx)
+	if err != nil {
+		return nil, err
 	}
 
-	return notes[id], nil
+	return res, nil
+}
+
+func GetOne(ctx context.Context, note *model.Note) (model.NewNote, error) {
+	return storage.GetNoteByID(ctx, note.ID)
 }
 
 func Add(ctx context.Context, newNote *model.Note) (model.EmptyResponse, error) {
@@ -50,31 +48,19 @@ func Add(ctx context.Context, newNote *model.Note) (model.EmptyResponse, error) 
 
 	content := newNote.Content
 
-	id := genID(content)
-
-	note := model.Note{
-		ID:         id,
-		Content:    content,
-		StartTime:  time.Now(),
-		UpdateTime: time.Now(),
+	if err = storage.AddNote(ctx, content); err != nil {
+		return model.EmptyResponse{}, err
 	}
-	notes[id] = note
 
 	return model.EmptyResponse{}, err
-
 }
 
 func Delete(ctx context.Context, note *model.Note) (model.EmptyResponse, error) {
 
 	var err error
 
-	id := note.ID
-	if _, exist := notes[id]; !exist {
-		return model.EmptyResponse{}, err
-	} else {
-		delete(notes, id)
-		return model.EmptyResponse{}, nil
-	}
+	err = storage.RemoveNote(ctx, note.ID)
+	return model.EmptyResponse{}, err
 }
 
 // 生成一个随机id
