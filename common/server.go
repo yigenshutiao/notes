@@ -91,7 +91,6 @@ func (c *Controller) HandleHTTP(wr http.ResponseWriter, r *http.Request, p httpr
 	respStr := response2JSON(r.Context(), wr, resp, err)
 
 	fmt.Println(respStr)
-
 }
 
 func (c *Controller) callFunc(r *http.Request, request interface{}) (interface{}, error) {
