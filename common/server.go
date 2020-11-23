@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"notes/logging"
 	"notes/util"
 	"reflect"
 )
@@ -73,16 +74,19 @@ func (c *Controller) HandleHTTP(wr http.ResponseWriter, r *http.Request, p httpr
 		}
 
 		if err := util.ConvertMapToStruct(param, request); err != nil {
+			logging.Logger.Printf("[HandleHTTP] convert Map to struct failed | err:%v | param:%v", err, param)
 			return
 		}
 	}
 
 	request, err := c.bindRequest(r, request)
 	if err != nil {
+		logging.Logger.Printf("[HandleHTTP] bind request failed  | err:%v | request:%v", err, request)
 		return
 	}
 
 	if err := Validate.Struct(request); err != nil {
+		logging.Logger.Printf("[HandleHTTP] validate struct failed  | err:%v | request:%v", err, request)
 		return
 	}
 
@@ -90,6 +94,7 @@ func (c *Controller) HandleHTTP(wr http.ResponseWriter, r *http.Request, p httpr
 
 	respStr := response2JSON(r.Context(), wr, resp, err)
 
+	logging.Logger.Printf("[HandleHTTP] respStr:%v", request)
 	fmt.Println(respStr)
 }
 
@@ -152,6 +157,7 @@ func response2JSON(ctx context.Context, wr http.ResponseWriter, resp interface{}
 	}
 
 	if err := writeResponse(wr, res); err != nil {
+		logging.Logger.Printf("[response2JSON] writeResponse err :%v", err)
 		return ""
 	}
 
@@ -164,6 +170,5 @@ func form2JSON(r *HTTPResponse) string {
 
 func writeResponse(wr http.ResponseWriter, res []byte) error {
 	_, err := wr.Write(res)
-
 	return err
 }

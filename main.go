@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+	"notes/logging"
 )
 
 const port = "8000"
@@ -12,13 +12,19 @@ func main() {
 
 	initLOGO()
 
+	logging.InitLog()
+
+	fmt.Println("init DB")
 	if err := initDB(); err != nil {
-		fmt.Println("init MySQL failed")
+		logging.Logger.Panic("init DB failed")
 	}
 
+	fmt.Println("init HTTP Router")
 	mux := initRouter()
+
+	fmt.Println("start HTTP server")
 	err := http.ListenAndServe(":"+port, mux)
 	if err != nil {
-		log.Fatal(err)
+		logging.Logger.Fatal(err)
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"notes/logging"
 	"notes/model"
 	"notes/storage"
 	"time"
@@ -26,12 +27,11 @@ func Hello(wr http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 }
 
-var notes = map[string]model.Note{}
-
 func GetAll(ctx context.Context, _ *model.EmptyRequest) ([]model.NewNote, error) {
 
 	res, err := storage.GetAllNotes(ctx)
 	if err != nil {
+		logging.Logger.Printf("[GetAll] get all notes failed | err:%v", err)
 		return nil, err
 	}
 
@@ -49,6 +49,7 @@ func Add(ctx context.Context, newNote *model.Note) (model.EmptyResponse, error) 
 	content := newNote.Content
 
 	if err = storage.AddNote(ctx, content); err != nil {
+		logging.Logger.Printf("[Add] add note failed | err:%v | content:%v", err, content)
 		return model.EmptyResponse{}, err
 	}
 

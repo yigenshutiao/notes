@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"notes/logging"
 	"notes/model"
 	"notes/storage/util"
 	"upper.io/db.v3/lib/sqlbuilder"
@@ -25,6 +26,7 @@ func GetNoteByID(ctx context.Context, id string) (model.NewNote, error) {
 
 	row, err := util.DBConnector.Query(queryNoteByID, param...)
 	if err != nil {
+		logging.Logger.Printf("[GetNoteByID] query note failed, err:%v", err)
 		return res, err
 	}
 	iter := sqlbuilder.NewIterator(row)
@@ -65,6 +67,7 @@ func GetAllNotes(ctx context.Context) ([]model.NewNote, error) {
 
 	rows, err := util.DBConnector.Query(queryNotes, param...)
 	if err != nil {
+		logging.Logger.Printf("[GetNoteByID] get all note failed, err:%v", err)
 		return res, err
 	}
 

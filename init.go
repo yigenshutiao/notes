@@ -1,9 +1,12 @@
 package main
 
 import (
-	_ "github.com/go-sql-driver/mysql"
-	"notes/storage/util"
 	"time"
+
+	"notes/logging"
+	"notes/storage/util"
+
+	_ "github.com/go-sql-driver/mysql"
 	"upper.io/db.v3/mysql"
 )
 
@@ -19,12 +22,14 @@ func initLOGO() {
 }
 
 func initDB() error {
-	setteing, err := mysql.ParseURL("root:root@/notes")
+	setting, err := mysql.ParseURL("root:root@/notes")
 	if err != nil {
+		logging.Logger.Panicln("[initDB] parse config failed")
 		return err
 	}
-	db, err := mysql.Open(setteing)
+	db, err := mysql.Open(setting)
 	if err != nil {
+		logging.Logger.Panicln("[initDB] open setting failed")
 		return err
 	}
 
