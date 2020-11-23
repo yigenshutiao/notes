@@ -16,7 +16,7 @@ func main() {
 
 	fmt.Println("init DB")
 	if err := initDB(); err != nil {
-		logging.Logger.Panic("init DB failed")
+		logging.Fatal("init DB failed")
 	}
 
 	fmt.Println("init HTTP Router")
@@ -25,6 +25,6 @@ func main() {
 	fmt.Println("start HTTP server")
 	err := http.ListenAndServe(":"+port, mux)
 	if err != nil {
-		logging.Logger.Fatal(err)
+		logging.Fatal(err)
 	}
 }
