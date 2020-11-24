@@ -9,6 +9,7 @@ import (
 	"notes/logging"
 	"notes/util"
 	"reflect"
+	"time"
 )
 
 const (
@@ -64,7 +65,18 @@ func checkHandleFunc(handleFunc interface{}) {
 
 func (c *Controller) HandleHTTP(wr http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
-	request := reflect.New(reflect.TypeOf(c.handleFunc).In(1).Elem()).Interface()
+	start := time.Now()
+
+	var respStr string
+	var request interface{}
+
+	defer func() {
+		procTimeMS := time.Since(start).Seconds() * 1000
+		logging.Infof("request=%v|resp=%v|proc_time%.2f", request, respStr, procTimeMS)
+		fmt.Printf("request=%v|resp=%v|proc_time%.2f", request, respStr, procTimeMS)
+	}()
+
+	request = reflect.New(reflect.TypeOf(c.handleFunc).In(1).Elem()).Interface()
 
 	var param = map[string]interface{}{}
 
@@ -92,10 +104,7 @@ func (c *Controller) HandleHTTP(wr http.ResponseWriter, r *http.Request, p httpr
 
 	resp, err := c.callFunc(r, request)
 
-	respStr := response2JSON(r.Context(), wr, resp, err)
-
-	logging.Infof("[HandleHTTP] respStr:%v", request)
-	fmt.Println(respStr)
+	respStr = response2JSON(r.Context(), wr, resp, err)
 }
 
 func (c *Controller) callFunc(r *http.Request, request interface{}) (interface{}, error) {
