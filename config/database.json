@@ -1,0 +1,8 @@
+{
+  "database": "notes",
+  "dsn": "root:123456@/notes",
+  "dbdriver": "mysql",
+  "connmaxlifetime": 180,
+  "maxopenconn": 100,
+  "maxidleconn": 80
+}
