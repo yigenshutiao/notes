@@ -7,9 +7,32 @@ import (
 	"testing"
 )
 
+func TestAddNote(t *testing.T) {
+	type args struct {
+		ctx     context.Context
+		content string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := AddNote(tt.args.ctx, tt.args.content); (err != nil) != tt.wantErr {
+				t.Errorf("AddNote() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
 func TestGetAllNotes(t *testing.T) {
 	type args struct {
-		ctx context.Context
+		ctx    context.Context
+		offset int
+		size   int
 	}
 	tests := []struct {
 		name    string
@@ -18,11 +41,10 @@ func TestGetAllNotes(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
-		{},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetAllNotes(tt.args.ctx)
+			got, err := GetAllNotes(tt.args.ctx, tt.args.offset, tt.args.size)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetAllNotes() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -42,11 +64,10 @@ func TestGetNoteByID(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    []model.NewNote
+		want    model.NewNote
 		wantErr bool
 	}{
 		// TODO: Add test cases.
-		{},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -62,34 +83,21 @@ func TestGetNoteByID(t *testing.T) {
 	}
 }
 
-func TestAddNote(t *testing.T) {
-	tests := []struct {
-		name    string
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-		{},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			//if err := AddNote(); (err != nil) != tt.wantErr {
-			//	t.Errorf("AddNote() error = %v, wantErr %v", err, tt.wantErr)
-			//}
-		})
-	}
-}
-
 func TestRemoveNote(t *testing.T) {
+	type args struct {
+		ctx context.Context
+		id  string
+	}
 	tests := []struct {
 		name    string
+		args    args
 		wantErr bool
 	}{
 		// TODO: Add test cases.
-		{},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := RemoveNote(); (err != nil) != tt.wantErr {
+			if err := RemoveNote(tt.args.ctx, tt.args.id); (err != nil) != tt.wantErr {
 				t.Errorf("RemoveNote() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
