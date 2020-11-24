@@ -19,6 +19,11 @@ func main() {
 		logging.Fatal("init DB failed")
 	}
 
+	fmt.Println("init Cache")
+	if err := initCache(); err != nil {
+		logging.Fatal("init Cache failed")
+	}
+
 	fmt.Println("init HTTP Router")
 	mux := initRouter()
 

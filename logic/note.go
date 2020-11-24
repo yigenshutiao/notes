@@ -3,12 +3,14 @@ package logic
 import (
 	"context"
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"net/http"
 	"notes/logging"
 	"notes/model"
 	"notes/storage"
+	"notes/storage/util"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -27,11 +29,23 @@ func Hello(wr http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 }
 
-func GetAll(ctx context.Context, _ *model.EmptyRequest) ([]model.NewNote, error) {
+func GetAll(ctx context.Context, req *model.NoteRequest) ([]model.NewNote, error) {
 
-	res, err := storage.GetAllNotes(ctx)
+	if req.Size == 20 && req.Offset == 0 {
+		cacheInfo, err := util.CacheClient.Get("note_info_0_20").Result()
+		if err != nil {
+			logging.Errorf("[GetAll] get cache info failed | err:%v", err)
+		}
+		var res []model.NewNote
+		if err := json.Unmarshal([]byte(cacheInfo), &res); err != nil {
+			logging.Errorf("[GetAll] get cache info failed | err:%v", err)
+		}
+		return res, nil
+	}
+
+	res, err := storage.GetAllNotes(ctx, req.Offset, req.Size)
 	if err != nil {
-		logging.Logger.Printf("[GetAll] get all notes failed | err:%v", err)
+		logging.Errorf("[GetAll] get all notes failed | err:%v", err)
 		return nil, err
 	}
 

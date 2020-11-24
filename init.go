@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/go-redis/redis"
 	"time"
 
 	"notes/logging"
@@ -19,6 +20,18 @@ func initLOGO() {
 |_| |_|\___/ \__\___||___/
 
 `)
+}
+
+func initCache() error {
+	client := redis.NewClient(&redis.Options{
+		Addr:     "127.0.0.1:6379",
+		Password: "",
+		DB:       0,
+	})
+
+	util.CacheClient = client
+
+	return nil
 }
 
 func initDB() error {
