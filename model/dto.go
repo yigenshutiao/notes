@@ -10,10 +10,15 @@ type Note struct {
 }
 
 type NewNote struct {
-	ID         int64     `db:"id" form:"id"`
-	Content    string    `db:"content" form:"content"`
-	StartTime  time.Time `db:"start_time" form:"start_time"`
-	UpdateTime time.Time `db:"update_time" form:"update_time"`
+	ID         int64     `db:"id" form:"id" json:"ID"`
+	Content    string    `db:"content" form:"content" json:"Content"`
+	StartTime  time.Time `db:"start_time" form:"start_time" json:"StartTime"`
+	UpdateTime time.Time `db:"update_time" form:"update_time" json:"UpdateTime"`
+}
+
+type NoteRequest struct {
+	Offset int `json:"offset" form:"offset" validate:"gte=0"`
+	Size   int `json:"size" form:"size" validate:"gte=0"`
 }
 
 type EmptyRequest struct{}
