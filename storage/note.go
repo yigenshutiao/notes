@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	queryNotes    = `SELECT id, content, start_time, update_time FROM note`
-	queryNoteByID = `SELECT id, content, start_time, update_time FROM note where id = ?`
+	queryNotes    = `SELECT id, content, start_time, update_time FROM note ORDER BY start_time LIMIT ?, ?`
+	queryNoteByID = `SELECT id, content, start_time, update_time FROM note WHERE id = ?`
 	addNote       = `INSERT INTO note (content) VALUES (?)`
 	removeNote    = `DELETE FROM note WHERE id = ?`
 )
@@ -57,13 +57,16 @@ func AddNote(ctx context.Context, content string) error {
 	return err
 }
 
-func GetAllNotes(ctx context.Context) ([]model.NewNote, error) {
+func GetAllNotes(ctx context.Context, offset, size int) ([]model.NewNote, error) {
 
 	var (
 		err   error
 		res   []model.NewNote
 		param []interface{}
 	)
+
+	param = append(param, offset)
+	param = append(param, size)
 
 	rows, err := util.DBConnector.Query(queryNotes, param...)
 	if err != nil {
